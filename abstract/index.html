@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animated Search Bar</title>
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Droid+Sans);
+
+    body {
+      background: #d35400;
+      font-family: 'Droid Sans', sans-serif;
+    }
+
+    .search-container {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      margin: 100px auto;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .search-container input {
+      border: 5px solid #fff;
+      background: transparent;
+      width: 100%;
+      height: 50px;
+      margin: auto;
+      border-radius: 25px;
+      position: relative;
+      padding-left: 40px;
+      box-sizing: border-box;
+      color: #fff;
+      font-weight: bolder;
+      font-size: 16px;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .search-container input::placeholder {
+      color: #fff;
+    }
+
+    .search-container input:focus {
+      outline: none;
+    }
+
+    .magnifier {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      top: 10px;
+      left: 10px;
+      border: 5px solid #fff;
+      border-radius: 50%;
+      box-sizing: border-box;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .magnifier:after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 5px;
+      background: #fff;
+      border-radius: 3px;
+      transform: rotate(45deg);
+      top: 18px;
+      left: 20px;
+    }
+
+    /* Hover Effect */
+    .search-container:hover {
+      width: 300px;
+      height: 50px;
+    }
+
+    .search-container:hover input {
+      width: calc(100% - 40px);
+      opacity: 1;
+    }
+
+    .search-container:hover .magnifier {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <form action="">
+      <div class="search-container">
+        <input type="search" placeholder="Search here...">
+        <span class="magnifier"></span>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

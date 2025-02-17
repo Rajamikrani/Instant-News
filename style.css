@@ -1,0 +1,23 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: rgb(129, 129, 245);
+}
+.button {
+    display: flex;
+   justify-content: space-between;
+   align-items :center;
+   flex-direction: row;
+  background-color: rgb(43, 14, 66);
+}
+
+span {
+    font-size: 12px;
+}
+.title {
+    width: 100%;
+    height: fit-content;
+    padding : 10px;
+    font-size: 30px;
+}
