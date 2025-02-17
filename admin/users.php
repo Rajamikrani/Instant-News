@@ -1,6 +1,11 @@
 <?php
 session_start();
-echo "Welcome ".$_SESSION['username'];
+include "config.php";
+// Redirect to login if session is not set
+if (!isset($_SESSION['username'])) {
+    header("location: login.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,78 +16,73 @@ echo "Welcome ".$_SESSION['username'];
     <title>Users</title>
 </head>
 <body>
-     <?php
-     include "header.php";
-     ?>
-    <main>
-        <div id="add_user_div">
-            <h2 id = "all_user">All Users</h2>
-            <button id = "add_user" name = "add_user"><a class = "add-new" href="add-user.php">Add User</a></button>
-        </div>
-        <div id="user_table">
-            <?php
-            include "config.php";
-            $userProfile = $_SESSION['username'];
-            if ($userProfile == true) {
-                
-            }else {
-                header("Location: login.php");
-            }
-            $sql = "SELECT * FROM users ORDER BY id asc";
-            $result = mysqli_query($conn , $sql) or die("Query failed.");
-            if (mysqli_num_rows($result) > 0) {
-            ?>
-            <table id="user_detail" border="1">
-                <thead>
-                <th>S.N</th>
-               <th>Full Name</th>
-               <th>User Name</th>
-               <th>Role</th>
-               <th>Edit</th>
-               <th>Delete</th>
-               </thead> 
-               <tbody>
+    <?php
+    
+    include "header.php";
+    include "sidebar.php";
+    ?>
+    <div class="users_content">
+        <main>
+            <div class="all_editors">
                 <?php
-                while ($row = mysqli_fetch_assoc($result)) {
-                 ?>   
-               <tr>
-                <td><?php echo $row['id']; ?></td>
-                <td> <?php echo $row['first_name'] ." ". $row['last_name']; ?> </td>
-                <td> <?php echo $row['username'];?></td>
-                <td> 
-                <?php 
-                echo $row['user_role'];
-                //  if ($row['user_role'] == 1) {
-                //     echo "Normal User";
-                //  }
-                //  else {
-                //     echo "Admin";
-                //  }
+                // SQL query to count editors
+                $sql = "SELECT COUNT(*) AS total_reporter FROM reporter";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute();
+
+                // Fetch the result
+                $data = $stmt->fetch(PDO::FETCH_ASSOC);
+                $total_reporter = $data['total_reporter'] ?? 0; // Default to 0 if no result
                 ?>
-                </td>
-                <td>
-                    <?php 
-                        // include "config.php";
-                        // $sql = "SELECT * from users where id = $row['id']";
-                        // $result = mysqli_query($conn , $sql);
-                        // if(mysqli_num_rows($result) > 0){
-                        //    header("location: modify.php");
-                        // }
-                        // exit();
-                    ?>
-                    <img src="write.png" alt="edit_icon">
-                </td>
-                <td><img src="delete.png" alt="delete_icon"></td>
-               </tr>
-               <?php
-                }
-               ?>
-               </tbody>
-            </table>
-            <?php
-            }
-            ?>
-        </div>
-    </main>
+                <h1><?php echo $total_reporter; ?></h1>
+                <p>Reporters</p>
+            </div>  
+
+            <div class="all_category">
+                <?php
+                // SQL query to count categories
+                $sql = "SELECT COUNT(*) AS total_category FROM news_category";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute();
+
+                // Fetch the result
+                $data = $stmt->fetch(PDO::FETCH_ASSOC);
+                $total_category = $data['total_category'] ?? 0; // Default to 0 if no result
+                ?>
+                <h1><?php echo $total_category; ?></h1>
+                <p>Category</p>
+            </div>  
+            
+            <div class="all_users">
+                <?php
+                // SQL query to count total users
+                $sql = "SELECT COUNT(*) AS total_users FROM user";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute();
+
+                // Fetch the result
+                $data = $stmt->fetch(PDO::FETCH_ASSOC);
+                $total_users = $data['total_users'] ?? 0; // Default to 0 if no result
+                ?>
+                <h1><?php echo $total_users; ?></h1>
+                <p>Users</p>
+            </div>  
+            
+            <div class="all_post">
+                <?php
+                // SQL query to count total posts
+                $sql = "SELECT COUNT(*) AS total_posts FROM news_articles";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute();
+  
+                // Fetch the result
+                $data = $stmt->fetch(PDO::FETCH_ASSOC);
+                $total_posts = $data['total_posts'] ?? 0; // Default to 0 if no result
+                ?>
+                <h1><?php echo $total_posts; ?></h1>
+                <p>Post</p>
+            </div>  
+        </main>
+    </div>
 </body>
 </html>

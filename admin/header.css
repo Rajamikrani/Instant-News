@@ -1,65 +1,88 @@
-*{
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-#header_container{
-    width: 100%;
-    height: 70px;
-}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}           
 
-#logo_container{
-    background-color: blueviolet;
-    width: 100%;
-    height: 40px;
+#header_container {
+    position: fixed;
+    width: 100vh;
+    height: 60px;
+    background-color: #041f43;      
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
 }
 
-#nav_container{
-    background-color: white;
-    width: 100%;
+#logo_div {
     display: flex;
-    justify-content: start;
-    padding-left: 20px;
+    align-items: center;
 }
 
-header nav ul {
-     list-style: none;
-       display: flex;
- }
-
- header nav ul li {
-     margin-right: 20px;
-     padding: 10px;
-     font-weight: bolder;
-     }
-     
- header nav ul li a {
-    color: blue;
-    text-decoration: none;
- }    
-
-#logo_img{
+#logo_img {
     width: 100px;
-    height: 30px;
-    padding: 5px;
+    height: 60px;
 }
-#logout_img{
+
+#search_container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    background-color: #041f43;
+}
+
+.search-bar {
+    width: 250px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+.search-bar:focus {
+    border-color: #4CAF50;
+}
+
+#logout_div i {
+    color : white;
+}
+
+#logout_div {
+    display: flex;
+    align-items: center;
+}
+
+#logout_img {
     width: 30px;
     height: 30px;
     padding: 5px;
+    cursor: pointer;
 }
 
-#logo_div{
-   width: 150px;
-   height: 30px;
-   padding: 10px;
+#logout_img:hover {
+    background-color: #ddd;
+    border-radius: 50%;
+    transition: background-color 0.3s;
 }
 
-#logout_div{
-   width: 50px;
-   height: 30px;
-   padding: 10px;
+@media screen and (max-width: 768px) {
+    #logo_container {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+        padding: 10px;
+    }
+
+    .search-bar {
+        width: 80%;
+    }
 }

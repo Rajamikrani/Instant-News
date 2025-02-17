@@ -74,7 +74,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['save'])){
 </head>
 <body>
   <?php
-  include "header.php";
+  include "header.php"; 
   ?>
     <main>
         <div id="main_container">
