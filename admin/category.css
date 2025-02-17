@@ -1,0 +1,195 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Main Content Styling */
+.users_content {
+    margin-left: 20%; /* Adjust margin to match sidebar width */
+    padding: 20px;
+    width: 80%;
+    padding-top: 90px; /* Avoid overlap with header */
+}
+/* Main Area Styling */
+main {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+#add_category_div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#add_category_div button {
+    background-color: #041f43;
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Popup styles */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    text-align: center;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: black;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form input, form textarea, form button {
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.btn-submit {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+
+
+#all_category {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Table Styling */
+#category_table {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+#category_detail {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+#category_detail th, #category_detail td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+#category_detail th {
+    background-color: #041f43;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+#category_detail td {
+    background-color: #f9f9f9;
+}
+
+#category_detail tbody tr:nth-child(even) {
+    background-color: #f1f1f1;
+}
+
+#category_detail tbody tr:hover {
+    background-color: #dff0ff;
+}
+
+/* Icons */
+#category_detail td img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+#category_detail td img:hover {
+    transform: scale(1.2);
+}
+
+/* Header Styling */
+header {
+    width: 100%;
+    background-color: #01224f;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 1000;
+}
+
+/* Responsive Layout */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 25%;
+    }
+
+    .users_content {
+        margin-left: 25%;
+    }
+
+    main {
+        width: 100%;
+    }
+
+    #add_category {
+        padding: 8px 15px;
+    }
+
+    #all_category {
+        font-size: 1.2rem;
+    }
+
+    #category_detail th, #category_detail td {
+        padding: 8px;
+    }
+
+    #category_detail td img {
+        width: 18px;
+        height: 18px;
+    }
+}
+

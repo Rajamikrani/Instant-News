@@ -1,0 +1,172 @@
+/* General Reset */
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+/* body {
+    /* font-family: Arial, sans-serif;
+    color: #333; */
+    /* display: flex; 
+} */
+
+/* Sidebar Styling */
+/* .sidebar {
+    /* width: 20%;
+    min-width: 200px; Ensure minimum width for small screens */
+    /* background-color: #021635; */
+    /* color: white;
+    height: 100vh; Full height */
+    /* position: fixed;
+    top: 0;
+    left: 0;
+    padding-top: 70px; Align below the header 
+} */
+
+/* Main Content Styling */
+.users_content {
+    margin-left: 20%; /* Adjust margin to match sidebar width */
+    padding: 20px;
+    width: 80%;
+    padding-top: 90px; /* Avoid overlap with header */
+}
+
+/* Main Area Styling */
+main {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+/* Header Section */
+#add_user_div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#add_user {
+    background-color: #0073e6;
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#add_user a {
+    text-decoration: none;
+    color: white;
+}
+
+#add_user:hover {
+    background-color: #005bb5;
+}
+
+#all_user {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Table Styling */
+#user_table {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+#user_detail {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+#user_detail th, #user_detail td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+#user_detail th {
+    background-color: #041f43;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+#user_detail td {
+    background-color: #f9f9f9;
+}
+
+#user_detail tbody tr:nth-child(even) {
+    background-color: #f1f1f1;
+}
+
+#user_detail tbody tr:hover {
+    background-color: #dff0ff;
+}
+
+/* Icons */
+#user_detail td img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+#user_detail td img:hover {
+    transform: scale(1.2);
+}
+
+/* Header Styling */
+header {
+    width: 100%;
+    background-color: #01224f;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 1000;
+}
+
+/* Responsive Layout */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .users_content {
+        margin-left: 25%;
+    }
+
+    main {
+        width: 100%;
+    }
+
+    #add_user {
+        padding: 8px 15px;
+    }
+
+    #all_user {
+        font-size: 1.2rem;
+    }
+
+    #user_detail th, #user_detail td {
+        padding: 8px;
+    }
+
+    #user_detail td img {
+        width: 18px;
+        height: 18px;
+    }
+}
