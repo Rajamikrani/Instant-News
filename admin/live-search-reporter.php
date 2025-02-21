@@ -25,7 +25,7 @@
                 <td>{$row['reporter_email']}</td>
                  <td>{$row['reporter_username']}</td>
                 <td align='center'><a href='edit_reporter.php?id={$row['reporterId']}'>Edit</a></td>
-                <td align='center'><a href='delete_reporter.php?id={$row['reporterId']}'>Delete</a></td>
+                <td align='center'><a href='delete_reporter .php?id={$row['reporterId']}'>Delete</a></td>
             </tr>";
         }
         $output .= "</table>";

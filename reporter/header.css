@@ -78,10 +78,6 @@ img{
     color: white;
 }
 
-@media screen and (max-width:500px) {
-   .menu_div{
-    display: none;
-   }
-}
+
 
 

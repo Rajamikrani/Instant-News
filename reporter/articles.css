@@ -20,3 +20,9 @@ body {
     background-color: blue;
     align-self: center;
 }
+
+#add_article_div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
