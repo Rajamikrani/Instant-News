@@ -16,7 +16,6 @@ $reporter_category = $_SESSION['reporter_category']; // Get reporter_category fr
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitPost'])) {
     $title = trim($_POST['title']);
     $content = trim($_POST['content']);
-    $imageUrl = trim($_POST['imageUrl']);
 
     $errors = [];
 
@@ -25,19 +24,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitPost'])) {
         $errors[] = "Title is required.";
     }
 
-    // Validate Content
+// Validate Content
     if (empty($content)) {
         $errors[] = "Content is required.";
     }
 
     // Validate Image URL
-    if (empty($imageUrl)) {
-        $errors[] = "Image URL is required.";
+    if (empty($_FILES['image']['name'])) {
+        $errors[] = "Image is required.";
+    }
+
+       // File validation
+       if (empty($_FILES['image']['name'])) {
+        $errors[] = "Image is required.";
+    } else {
+        // File size validation (2MB max)
+        $maxFileSize = 2 * 1024 * 1024;
+        if ($_FILES['image']['size'] > $maxFileSize) {
+            $errors[] = "File size exceeds 2MB limit.";
+        }
+        
+        // MIME type validation
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        $fileMimeType = mime_content_type($_FILES['image']['tmp_name']);
+        if (!in_array($fileMimeType, $allowedMimeTypes)) {
+            $errors[] = "Invalid file type. Only JPG, PNG, and GIF are allowed.";
+        }
     }
 
     // If validation passes, process the form
     if (empty($errors)) {
+       
         try {
+            // File upload handling
+            $targetDir = "uploads/";
+            if (!file_exists($targetDir)) {
+                mkdir($targetDir, 0777, true);
+            }
+            $fileName = basename($_FILES["image"]["name"]);
+            $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+            $allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
+            
+            // Validate file
+                if (!in_array($fileExt, $allowedExts)) {
+                throw new Exception("Only JPG, JPEG, PNG & GIF files are allowed.");
+             }
+                
+            $targetFile = $targetDir . uniqid() . "_" . $fileName;
+
+             if(move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
             // Insert new post into the database
             $sql = "INSERT INTO news_articles (article_title, article_content, article_imageUrl, reporter_id, CategoryID) 
                     VALUES (:title, :content, :imageUrl, :reporter_id , :reporter_category)";
@@ -45,12 +80,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitPost'])) {
             $stmt->execute([
                 ':title' => $title,
                 ':content' => $content,
-                ':imageUrl' => $imageUrl,
+                ':imageUrl' => $targetFile,
                 ':reporter_id' => $reporter_id, // Add reporter_id from the session
                 ':reporter_category' => $reporter_category // Add reporter_category from the ses
             ]);
             echo "<script>alert('Post added successfully!');</script>";
-        } catch (PDOException $e) {
+        }
+        else {
+            throw new Exception("File upload failed");
+        }
+     } catch (PDOException $e) {
             echo "<script>alert('Error adding Post: " . $e->getMessage() . "');</script>";
         }
     } else {
@@ -59,7 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitPost'])) {
             echo "<p style='color: red;'>$error</p>";
         }
     }
-}
+  }  
+
 
 // Fetch all articles by the logged-in reporter
 try {
@@ -67,7 +107,7 @@ try {
             FROM news_articles 
             WHERE reporter_id = :reporter_id";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute(['reporter_id' => $reporter_id]);
+    $stmt->execute([':reporter_id' => $reporter_id]);
     $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
@@ -112,7 +152,6 @@ body {
     justify-content: space-between;
     align-items: center;
 }
-
 
 .search-container {
       position: relative;
@@ -189,6 +228,10 @@ body {
       pointer-e vents: none;
     }
 
+    #search-results { display: none; }
+    #default-data { display: table-row-group; }
+    .loading { display: none; color: #666; padding: 10px; }
+
     #add_article_div button {
     background-color: #041f43;
     color: white;
@@ -199,7 +242,6 @@ body {
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
-
 
 /* Popup styles */
 .popup {
@@ -271,7 +313,6 @@ table th {
     color:white;
     padding:10px;
 }
-
     </style>
 </head>
 <body>
@@ -289,24 +330,22 @@ table th {
                   <span class="magnifier"></span>
                 </div>
             </form>
-
             <button id = "open_popup" name = "add_reporter">Add Post</button>
-       
         </div>
 
 <div id="popup" class="popup">
     <div class="popup-content">
         <span class="close">&times;</span>
         <h2>Add New Post</h2>
-        <form id="addReporterForm" method="POST" action="">
+        <form id="addReporterForm" method="POST" action="" enctype="multipart/form-data">
             <label for="title">Title:</label>
             <input type="text" id="name" name="title" required>
 
             <label for="content">Content:</label>
             <input type="text" id="email" name="content" required>
 
-            <label for="imageUrl">imageUrl:</label>
-            <input type="url" id="username" name="imageUrl" required>
+            <label for="image">image:</label>
+            <input type="file" id="file" name="image" accept="image/*" required>
 
             <button type="submit" name="submitPost" class="btn-submit">Submit</button>
         </form>
@@ -325,33 +364,36 @@ table th {
                     <th>Delete</th>
                 </tr>
                 </thead>
-                <tbody>
-            <?php if (!empty($articles)): ?>
-                <?php foreach ($articles as $article): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($article['article_id']); ?></td>
-                        <td><?php echo htmlspecialchars($article['article_title']); ?></td>
-                        <td><?php echo nl2br(htmlspecialchars(substr($article['article_content'], 0, 100))); ?>...</td>
-                        <!-- <td><?php echo htmlspecialchars($article['CreatedAt']); ?></td> -->
-                        <td>
-                          <a href="<?php echo htmlspecialchars($article['article_imageUrl']); ?>" target="_blank">
-                           <?php echo htmlspecialchars($article['article_imageUrl']); ?>
-                          </a>
-                        </td>
-                        <td>
-                            <a href="edit_article.php?id=<?php echo $article['article_id']; ?>">Edit</a> |
-                        </td>
-                        <td>
-                        <a href="delete_article.php?id=<?php echo $article['article_id']; ?>">Delete</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="5">No articles found.</td>
-                </tr>
-            <?php endif; ?>
-        </tbody>
+                <tbody id="search-results">
+                <div class="loading">Searching articles...</div>
+                </tbody>
+                <tbody id="default-data">
+    <?php if (!empty($articles)): ?>
+        <?php foreach ($articles as $article): ?>
+            <tr>
+                <td><?= htmlspecialchars($article['article_id']) ?></td>
+                <td><?= htmlspecialchars($article['article_title']) ?></td>
+                <td><?= nl2br(htmlspecialchars($article['article_content'])) ?></td>
+                <td>
+                    <a href="<?= htmlspecialchars($article['article_imageUrl']) ?>" target="_blank">
+                        View Image
+                    </a>
+                </td>
+                <td>
+                    <a href="edit_article.php?id=<?= $article['article_id'] ?>">Edit</a>
+                </td>
+                <td>
+                    <a href="delete_article.php?id=<?= $article['article_id'] ?>" 
+                       onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="6">No articles found.</td>
+        </tr>
+    <?php endif; ?>
+</tbody>
             </table>
         </div>
     </div>
@@ -379,31 +421,50 @@ table th {
   });
 
 
-         // Live Search
-         $("#search").on("keyup", function () {
-    var search_term = $(this).val();
+        // Live Search Implementation
+        let searchTimeout;
+        const searchInput = document.getElementById('search');
+        const defaultData = document.getElementById('default-data');
+        const searchResults = document.getElementById('search-results');
+        const loading = document.querySelector('.loading');
 
-    if (search_term.trim() === "") {
-        // If search is empty, hide search results and show default data
-        $("#table-data").hide();
-        $("#default-data").show();
-    } else {
-        // Perform AJAX call for live search
-        $.ajax({
-            url: "live-search-reporter.php",
-            type: "POST",
-            data: { search: search_term },
-            success: function (data) {
-                $("#table-data").html(data).show(); // Show search results
-                $("#default-data").hide(); // Hide default table
-            },
-            error: function () {
-                alert("Error occurred while performing the search.");
+        function performSearch(searchTerm) {
+            if (searchTerm.length === 0) {
+                defaultData.style.display = 'table-row-group';
+                searchResults.style.display = 'none';
+                loading.style.display = 'none';
+                return;
             }
-        });
-    }
-});
 
+            loading.style.display = 'block';
+            searchResults.innerHTML = '';
+            
+            fetch('live-search.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'search=' + encodeURIComponent(searchTerm)
+            })
+            .then(response => response.text())
+            .then(data => {
+                defaultData.style.display = 'none';
+                searchResults.innerHTML = data;
+                searchResults.style.display = 'table-row-group';
+                loading.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loading.style.display = 'none';
+            });
+        }
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch(this.value.trim());
+            }, 300);
+        });
 
      </script>
 </body>
