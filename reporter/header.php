@@ -61,6 +61,10 @@ img{
         <div class="menu_div">
             <li><a href="">Home</a></li>
             <li><a href="">Articles</a></li>
+<<<<<<< HEAD
+=======
+            <li><a href="">Drafts</a></li>
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf
         </div>
        <div class="logout">
        <a href="../admin/logout.php"><i class = "fas fa-user"></i></a>

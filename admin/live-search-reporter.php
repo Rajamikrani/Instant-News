@@ -25,7 +25,11 @@
                 <td>{$row['reporter_email']}</td>
                  <td>{$row['reporter_username']}</td>
                 <td align='center'><a href='edit_reporter.php?id={$row['reporterId']}'>Edit</a></td>
+<<<<<<< HEAD
                 <td align='center'><a href='delete_reporter .php?id={$row['reporterId']}'>Delete</a></td>
+=======
+                <td align='center'><a href='delete_reporter.php?id={$row['reporterId']}'>Delete</a></td>
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf
             </tr>";
         }
         $output .= "</table>";

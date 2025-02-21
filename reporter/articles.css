@@ -20,9 +20,12 @@ body {
     background-color: blue;
     align-self: center;
 }
+<<<<<<< HEAD
 
 #add_article_div {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+=======
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf

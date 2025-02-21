@@ -34,16 +34,81 @@ body{
     justify-content: space-between;
     align-items: center;
     width: 100%;
+<<<<<<< HEAD
     padding: 20px 20px;
     background-color: #0b0b11;
 }
 .logo{
     margin-left: 60px;
+=======
+    padding: 20px 50px;
+    background-color: #0b0b11;
+}
+.logo{
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf
     font-size: 45px;
     font-weight: 700;
     cursor:pointer;
 }
 
+<<<<<<< HEAD
+=======
+/* Hide extra categories */
+.hidden-category {
+    display: none;
+}
+
+/* Sidebar Styles */
+#sidebar {
+    position: fixed;
+    right: -250px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: #222;
+    padding: 20px;
+    transition: right 0.3s ease-in-out;
+}
+
+#sidebar h3 {
+    color: white;
+    text-align: center;
+}
+
+#sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+#sidebar ul li {
+    margin: 10px 0;
+}
+
+#sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    display: block;
+    padding: 10px;
+    transition: 0.3s;
+}
+
+#sidebar ul li a:hover {
+    background: #444;
+}
+
+/* Close button */
+#close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf
 
 nav ul{
     display: flex;
@@ -65,6 +130,7 @@ nav ul li a{
     color: #fff;
     letter-spacing: 1px;
 }
+<<<<<<< HEAD
 
 #menu_div{
     padding: 10px;
@@ -124,6 +190,8 @@ z-index: 999;
 }
 
 
+=======
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf
 .topHeadlines{
     padding: 100px 50px 50px;
     width: 100%;

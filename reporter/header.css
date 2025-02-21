@@ -78,6 +78,14 @@ img{
     color: white;
 }
 
+<<<<<<< HEAD
 
+=======
+@media screen and (max-width:500px) {
+   .menu_div{
+    display: none;
+   }
+}
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf
 
 

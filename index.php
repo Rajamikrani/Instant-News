@@ -6,7 +6,10 @@ include "config.php";
  <head>
      <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+=======
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf
      <title>Document</title>
      <link rel="stylesheet" href="style.css">
  </head>
@@ -19,6 +22,7 @@ include "config.php";
              <ul>
              <?php
             try {
+<<<<<<< HEAD
                 $stmt = $pdo->query("SELECT CategoryName FROM news_category ORDER BY CreatedAt DESC limit 4");
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     // Convert category name into a slug format (replace spaces with hyphens)
@@ -46,6 +50,8 @@ include "config.php";
             <ul>
             <?php
             try {
+=======
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf
                 $stmt = $pdo->query("SELECT CategoryName FROM news_category ORDER BY CreatedAt DESC");
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     // Convert category name into a slug format (replace spaces with hyphens)
@@ -58,6 +64,7 @@ include "config.php";
                 echo '<li><a href="#">Error loading categories</a></li>';
             }
             ?>
+<<<<<<< HEAD
             </ul>
        
          </div>
@@ -65,6 +72,11 @@ include "config.php";
 
 
 
+=======
+             </ul>  
+         </nav>
+     </div>
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf
      <div class="topHeadlines">
          <div class="left">
              <div class="title">
@@ -322,11 +334,18 @@ include "config.php";
                  <div class="title">
                 <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
             </div>
+<<<<<<< HEAD
         </div>
     </div>  
  </div>
 </div>
 <script src = "index.js"></script>
+=======
+            </div>
+ 
+ </div>       </div>
+</div>
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf
 </body>
 </html>
 

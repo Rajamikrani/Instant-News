@@ -147,7 +147,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['reporterId'] = null;  // Avoid undefined errors
                     $_SESSION['reporter_category'] = null;
                 }
+<<<<<<< HEAD
                 header("Location: http://localhost/php_practice/news-site/reporter/home.php");
+=======
+                header("Location: http://localhost/php_practice/news-site/reporter/articles.php");
+>>>>>>> 76f79100be993b43f49ffc4523ecc7bbb410bedf
                 exit();
             } elseif ($role == 'user') {
                 header("Location: user_registration.php");
