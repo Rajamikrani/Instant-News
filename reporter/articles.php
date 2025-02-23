@@ -16,6 +16,7 @@ $reporter_category = $_SESSION['reporter_category']; // Get reporter_category fr
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitPost'])) {
     $title = trim($_POST['title']);
     $content = trim($_POST['content']);
+    $article_id = $_POST['article_id'] ?? 0;
 
     $errors = [];
 
@@ -52,6 +53,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitPost'])) {
         }
     }
 
+  // Replace the update block with this corrected code
+if ($article_id > 0) {
+    try {
+        // Start with base SET clause
+        $sql = "UPDATE news_articles SET 
+                article_title = :title,
+                article_content = :content";
+        
+        $params = [
+            ':title' => $title,
+            ':content' => $content,
+            ':id' => $article_id,
+            ':reporter_id' => $reporter_id
+        ];
+
+        // Handle image upload if provided
+        if (!empty($_FILES['image']['name'])) {
+            $targetDir = "uploads/";
+            if (!file_exists($targetDir)) {
+                mkdir($targetDir, 0777, true);
+            }
+            
+            $fileName = uniqid() . '_' . basename($_FILES["image"]["name"]);
+            $targetFile = $targetDir . $fileName;
+            
+            if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
+                $sql .= ", article_imageUrl = :image";
+                $params[':image'] = $targetFile;
+            } else {
+                throw new Exception("File upload failed");
+            }
+        }
+
+        // Add WHERE clause after SET clause
+        $sql .= " WHERE article_id = :id AND reporter_id = :reporter_id";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        echo "<script>
+            alert('Article updated successfully!');
+            // window.location.reload();
+        </script>";
+        
+    } catch (Exception $e) {
+        echo "<script>alert('Error: " . addslashes($e->getMessage()) . "');</script>";
+    }
+}
+
+
     // If validation passes, process the form
     if (empty($errors)) {
        
@@ -86,9 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitPost'])) {
             ]);
             echo "<script>alert('Post added successfully!');</script>";
         }
-        else {
-            throw new Exception("File upload failed");
-        }
+    
      } catch (PDOException $e) {
             echo "<script>alert('Error adding Post: " . $e->getMessage() . "');</script>";
         }
@@ -243,6 +292,18 @@ body {
     transition: background-color 0.3s ease;
 }
 
+#current-image-container {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#current-image a {
+    color: #007bff;
+    text-decoration: none;
+}
+
 /* Popup styles */
 .popup {
     display: none;
@@ -333,21 +394,26 @@ table th {
             <button id = "open_popup" name = "add_reporter">Add Post</button>
         </div>
 
-<div id="popup" class="popup">
+        <div id="popup" class="popup">
     <div class="popup-content">
         <span class="close">&times;</span>
-        <h2>Add New Post</h2>
-        <form id="addReporterForm" method="POST" action="" enctype="multipart/form-data">
+        <h2 id="form-title">Add New Post</h2>
+        <form id="articleForm" method="POST" action="" enctype="multipart/form-data">
+            <input type="hidden" id="article_id" name="article_id" value="">
+            
             <label for="title">Title:</label>
-            <input type="text" id="name" name="title" required>
+            <input type="text" id="title" name="title" required>
 
             <label for="content">Content:</label>
-            <input type="text" id="email" name="content" required>
+            <textarea id="content" name="content" required></textarea>
 
-            <label for="image">image:</label>
-            <input type="file" id="file" name="image" accept="image/*" required>
-
-            <button type="submit" name="submitPost" class="btn-submit">Submit</button>
+            <label for="image">Image:</label>
+            <div id="current-image-container" style="display:none">
+                <p>Current Image: <span id="current-image"></span></p>
+            </div>
+            <input type="file" id="image" name="image" accept="image/*">
+            
+            <button type="submit" name="submitPost" class="btn-submit">Save Article</button>
         </form>
     </div>
 </div>
@@ -380,7 +446,7 @@ table th {
                     </a>
                 </td>
                 <td>
-                    <a href="edit_article.php?id=<?= $article['article_id'] ?>">Edit</a>
+                    <a href="#" class="edit-btn" data-id="<?= $article['article_id'] ?>">Edit</a>
                 </td>
                 <td>
                     <a href="delete_article.php?id=<?= $article['article_id'] ?>" 
@@ -397,75 +463,104 @@ table th {
             </table>
         </div>
     </div>
-    <script>
+
+ <script>
+    
 // JavaScript for handling popup
-  const openPopupBtn = document.getElementById("open_popup");
-  const popup = document.getElementById("popup");
-  const closeBtn = document.querySelector(".close");
+const openPopupBtn = document.getElementById("open_popup");
+const popup = document.getElementById("popup");
+const closeBtn = document.querySelector(".close");
 
-  // Show the popup
-  openPopupBtn.addEventListener("click", () => {
-      popup.style.display = "flex";
-  });
+// Show the popup
+openPopupBtn.addEventListener("click", () => {
+    popup.style.display = "flex";
+});
 
-  // Close the popup when the close button is clicked
-  closeBtn.addEventListener("click", () => {
-      popup.style.display = "none";
-  });
+// Close the popup when the close button is clicked
+closeBtn.addEventListener("click", () => {
+    popup.style.display = "none";
+});
 
-  // Close the popup when clicking outside the popup content
-  popup.addEventListener("click", (e) => {
-      if (e.target === popup) {
-          popup.style.display = "none";
+// Close the popup when clicking outside the popup content
+popup.addEventListener("click", (e) => {
+    if (e.target === popup) {
+        popup.style.display = "none";
+    }
+});
+
+// Add this to your existing JavaScript
+document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const articleId = this.dataset.id;
+        
+        fetch(`get_article.php?id=${articleId}`)
+            .then(response => response.json())
+            .then(article => {
+                document.getElementById('form-title').textContent = 'Edit Article';
+                document.getElementById('article_id').value = article.article_id;
+                document.getElementById('title').value = article.article_title;
+                document.getElementById('content').value = article.article_content;
+                
+                // Show current image
+                document.getElementById('current-image-container').style.display = 'block';
+                document.getElementById('current-image').innerHTML = 
+                    `<a href="${article.article_imageUrl}" target="_blank">View Current Image</a>`;
+                
+                // Make image input optional for edits
+                document.getElementById('image').removeAttribute('required');
+                
+                popup.style.display = "flex";
+            })
+            .catch(error => console.error('Error:', error));
+    });
+});
+
+      // Live Search Implementation
+      let searchTimeout;
+      const searchInput = document.getElementById('search');
+      const defaultData = document.getElementById('default-data');
+      const searchResults = document.getElementById('search-results');
+      const loading = document.querySelector('.loading');
+
+      function performSearch(searchTerm) {
+          if (searchTerm.length === 0) {
+              defaultData.style.display = 'table-row-group';
+              searchResults.style.display = 'none';
+              loading.style.display = 'none';
+              return;
+          }
+
+          loading.style.display = 'block';
+          searchResults.innerHTML = '';
+          
+          fetch('live-search.php', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: 'search=' + encodeURIComponent(searchTerm)
+          })
+          .then(response => response.text())
+          .then(data => {
+              defaultData.style.display = 'none';
+              searchResults.innerHTML = data;
+              searchResults.style.display = 'table-row-group';
+              loading.style.display = 'none';
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              loading.style.display = 'none';
+          });
       }
-  });
 
+      searchInput.addEventListener('input', function() {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+              performSearch(this.value.trim());
+          }, 300);
+      });
 
-        // Live Search Implementation
-        let searchTimeout;
-        const searchInput = document.getElementById('search');
-        const defaultData = document.getElementById('default-data');
-        const searchResults = document.getElementById('search-results');
-        const loading = document.querySelector('.loading');
-
-        function performSearch(searchTerm) {
-            if (searchTerm.length === 0) {
-                defaultData.style.display = 'table-row-group';
-                searchResults.style.display = 'none';
-                loading.style.display = 'none';
-                return;
-            }
-
-            loading.style.display = 'block';
-            searchResults.innerHTML = '';
-            
-            fetch('live-search.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'search=' + encodeURIComponent(searchTerm)
-            })
-            .then(response => response.text())
-            .then(data => {
-                defaultData.style.display = 'none';
-                searchResults.innerHTML = data;
-                searchResults.style.display = 'table-row-group';
-                loading.style.display = 'none';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                loading.style.display = 'none';
-            });
-        }
-
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                performSearch(this.value.trim());
-            }, 300);
-        });
-
-     </script>
+ </script>       
 </body>
 </html>
