@@ -105,7 +105,6 @@ if ($article_id > 0) {
 
     // If validation passes, process the form
     if (empty($errors)) {
-       
         try {
             // File upload handling
             $targetDir = "uploads/";
@@ -161,6 +160,24 @@ try {
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
 }
+
+// Pagination setup
+$limit = 3; // Number of records per page
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) : 1;
+$offset = ($page - 1) * $limit;
+
+// Get total rows
+$totalStmt = $pdo->query("SELECT COUNT(*) FROM news_articles");
+$totalRows = $totalStmt->fetchColumn();
+$totalPages = ceil($totalRows / $limit);
+
+// Fetch paginated records
+$sql = "SELECT * FROM news_articles ORDER BY article_id ASC LIMIT :limit OFFSET :offset";
+$stmt = $pdo->prepare($sql);
+$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+$articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -365,14 +382,110 @@ form textarea {
     cursor: pointer;
 }
 
-table {
-    width:100%
+
+#article_tbl_div {
+    margin-top: 20px;
+    overflow-x: auto;
 }
 
-table th {
-    background-color:#041f43;
-    color:white;
-    padding:10px;
+#article_tbl_div {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+#article_tbl_div th, #article_tbl_div td {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    transition: background-color 0.3s ease;
+}
+
+#article_tbl_div th {
+    background-color: #3b5998;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#article_tbl_div td {
+    background-color: #ffffff;
+}
+
+#article_tbl_div tbody tr:nth-child(even) {
+    background-color: #f5f5f5;
+}
+
+#article_tbl_div tbody tr:hover {
+    background-color: #eaf3ff;
+    cursor: pointer;
+}
+
+#article_tbl_div td img {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+#article_tbl_div td img:hover {
+    transform: scale(1.2);
+    filter: brightness(1.2);
+}
+
+/* Styles for search results */
+#article_tbl_div {
+    margin-top: 20px;
+}
+
+#article_tbl_div table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+#article_tbl_div th, #article_tbl_div td {
+    padding: 10px;
+    border: 1px solid #dcdcdc;
+}
+
+#article_tbl_div th {
+    background-color: #041f43;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#article_tbl_div tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+# tbody tr:hover {
+    background-color: #e0f7fa;
+    transition: background-color 0.2s ease;
+}
+
+
+#pagination {
+    margin: 20px;
+    text-align: center;
+}
+
+#pagination a {
+    margin: 0 5px;
+    text-decoration: none;
+    color: #041f43;
+    font-weight: bold;
+    padding: 5px 10px;
+    padding-buttom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#pagination a:hover {
+    background-color: #041f43;
+    color: white;
 }
     </style>
 </head>
@@ -435,21 +548,21 @@ table th {
                 </tbody>
                 <tbody id="default-data">
     <?php if (!empty($articles)): ?>
-        <?php foreach ($articles as $article): ?>
+        <?php foreach ($articles as $index => $data): ?>
             <tr>
-                <td><?= htmlspecialchars($article['article_id']) ?></td>
-                <td><?= htmlspecialchars($article['article_title']) ?></td>
-                <td><?= nl2br(htmlspecialchars($article['article_content'])) ?></td>
+            <td><?php echo ($offset + $index + 1); ?></td>
+                <td><?= htmlspecialchars($data['article_title']) ?></td>
+                <td><?= nl2br(htmlspecialchars($data['article_content'])) ?></td>
                 <td>
-                    <a href="<?= htmlspecialchars($article['article_imageUrl']) ?>" target="_blank">
+                    <a href="<?= htmlspecialchars($data['article_imageUrl']) ?>" target="_blank">
                         View Image
                     </a>
                 </td>
                 <td>
-                    <a href="#" class="edit-btn" data-id="<?= $article['article_id'] ?>">Edit</a>
+                    <a href="#" class="edit-btn" data-id="<?= $data['article_id'] ?>">Edit</a>
                 </td>
                 <td>
-                    <a href="delete_article.php?id=<?= $article['article_id'] ?>" 
+                    <a href="delete_article.php?id=<?= $data['article_id'] ?>" 
                        onclick="return confirm('Are you sure?')">Delete</a>
                 </td>
             </tr>
@@ -462,6 +575,22 @@ table th {
 </tbody>
             </table>
         </div>
+            <!-- Pagination -->
+    <div id="pagination">
+        <?php if ($page > 1): ?>
+            <a href="?page=<?php echo $page - 1; ?>">Previous</a>
+        <?php endif; ?>
+
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <a href="?page=<?php echo $i; ?>" <?php if ($i == $page) echo 'style="font-weight:bold;"'; ?>>
+                <?php echo $i; ?>
+            </a>
+        <?php endfor; ?>
+
+        <?php if ($page < $totalPages): ?>
+            <a href="?page=<?php echo $page + 1; ?>">Next</a>
+        <?php endif; ?>
+    </div>
     </div>
 
  <script>
