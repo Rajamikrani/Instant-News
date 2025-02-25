@@ -94,7 +94,10 @@ padding: 20px;
 left: -250px;
 transition: all 0.3s ease;
 z-index: 999;
+overflow-y: auto;
+overflow-x: hidden;
 }
+
 
 #sidebar_div.active {
     left: 0;
@@ -102,6 +105,8 @@ z-index: 999;
 
 #sidebar_div ul {
     list-style: none;
+    overflow-y: auto;
+    max-height: calc(100vh - 100px);  /* Ensure the list doesn't overflow the sidebar */
    
 }
 #sidebar_div h2{

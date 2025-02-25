@@ -2,182 +2,115 @@
 session_start();
 require 'config.php'; // Include PDO connection
 
-// Redirect to login if reporter is not logged in
-if (!isset($_SESSION['reporterId'])) {
+// Redirect to login if the reporter is not logged in
+if (!isset($_SESSION['reporterId']) || !isset($_SESSION['reporter_category'])) {
     header("Location: ../admin/login.php");
     exit;
 }
 
+$reporter_id = $_SESSION['reporterId'];
+$reporter_category = $_SESSION['reporter_category'];
 
-$reporter_id = $_SESSION['reporterId']; // Get reporter ID from session
-$reporter_category = $_SESSION['reporter_category']; // Get reporter_category from session
-
-// Handle form submission
+// Handle form submission for adding or updating posts
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitPost'])) {
     $title = trim($_POST['title']);
     $content = trim($_POST['content']);
-    $article_id = $_POST['article_id'] ?? 0;
-
+    $article_id = isset($_POST['article_id']) ? intval($_POST['article_id']) : 0;
     $errors = [];
 
-    // Validate Title
-    if (empty($title)) {
-        $errors[] = "Title is required.";
-    }
-
-// Validate Content
-    if (empty($content)) {
-        $errors[] = "Content is required.";
-    }
-
-    // Validate Image URL
-    if (empty($_FILES['image']['name'])) {
-        $errors[] = "Image is required.";
-    }
-
-       // File validation
-       if (empty($_FILES['image']['name'])) {
-        $errors[] = "Image is required.";
-    } else {
-        // File size validation (2MB max)
-        $maxFileSize = 2 * 1024 * 1024;
-        if ($_FILES['image']['size'] > $maxFileSize) {
-            $errors[] = "File size exceeds 2MB limit.";
+    // Validate Inputs
+    if (empty($title)) $errors[] = "Title is required.";
+    if (empty($content)) $errors[] = "Content is required.";
+    
+    // Handle Image Upload
+    $targetFile = "";
+    if (!empty($_FILES['image']['name'])) {
+        $targetDir = "uploads/";
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0777, true);
         }
-        
-        // MIME type validation
+
+        $fileName = uniqid() . "_" . basename($_FILES["image"]["name"]);
+        $targetFile = $targetDir . $fileName;
         $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
         $fileMimeType = mime_content_type($_FILES['image']['tmp_name']);
+
         if (!in_array($fileMimeType, $allowedMimeTypes)) {
             $errors[] = "Invalid file type. Only JPG, PNG, and GIF are allowed.";
+        } elseif ($_FILES['image']['size'] > 2 * 1024 * 1024) {
+            $errors[] = "File size exceeds 2MB limit.";
+        } elseif (!move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
+            $errors[] = "File upload failed.";
         }
     }
 
-  // Replace the update block with this corrected code
-if ($article_id > 0) {
-    try {
-        // Start with base SET clause
-        $sql = "UPDATE news_articles SET 
-                article_title = :title,
-                article_content = :content";
-        
-        $params = [
-            ':title' => $title,
-            ':content' => $content,
-            ':id' => $article_id,
-            ':reporter_id' => $reporter_id
-        ];
-
-        // Handle image upload if provided
-        if (!empty($_FILES['image']['name'])) {
-            $targetDir = "uploads/";
-            if (!file_exists($targetDir)) {
-                mkdir($targetDir, 0777, true);
-            }
-            
-            $fileName = uniqid() . '_' . basename($_FILES["image"]["name"]);
-            $targetFile = $targetDir . $fileName;
-            
-            if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-                $sql .= ", article_imageUrl = :image";
-                $params[':image'] = $targetFile;
-            } else {
-                throw new Exception("File upload failed");
-            }
-        }
-
-        // Add WHERE clause after SET clause
-        $sql .= " WHERE article_id = :id AND reporter_id = :reporter_id";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-
-        echo "<script>
-            alert('Article updated successfully!');
-            // window.location.reload();
-        </script>";
-        
-    } catch (Exception $e) {
-        echo "<script>alert('Error: " . addslashes($e->getMessage()) . "');</script>";
-    }
-}
-
-
-    // If validation passes, process the form
     if (empty($errors)) {
         try {
-            // File upload handling
-            $targetDir = "uploads/";
-            if (!file_exists($targetDir)) {
-                mkdir($targetDir, 0777, true);
-            }
-            $fileName = basename($_FILES["image"]["name"]);
-            $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            $allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
-            
-            // Validate file
-                if (!in_array($fileExt, $allowedExts)) {
-                throw new Exception("Only JPG, JPEG, PNG & GIF files are allowed.");
-             }
-                
-            $targetFile = $targetDir . uniqid() . "_" . $fileName;
+            if ($article_id > 0) {
+                // Update an existing article
+                $sql = "UPDATE news_articles SET article_title = :title, article_content = :content";
+                $params = [':title' => $title, ':content' => $content, ':id' => $article_id, ':reporter_id' => $reporter_id];
 
-             if(move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-            // Insert new post into the database
-            $sql = "INSERT INTO news_articles (article_title, article_content, article_imageUrl, reporter_id, CategoryID) 
-                    VALUES (:title, :content, :imageUrl, :reporter_id , :reporter_category)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                ':title' => $title,
-                ':content' => $content,
-                ':imageUrl' => $targetFile,
-                ':reporter_id' => $reporter_id, // Add reporter_id from the session
-                ':reporter_category' => $reporter_category // Add reporter_category from the ses
-            ]);
-            echo "<script>alert('Post added successfully!');</script>";
-        }
-    
-     } catch (PDOException $e) {
-            echo "<script>alert('Error adding Post: " . $e->getMessage() . "');</script>";
+                if ($targetFile) {
+                    $sql .= ", article_imageUrl = :image";
+                    $params[':image'] = $targetFile;
+                }
+
+                $sql .= " WHERE article_id = :id AND reporter_id = :reporter_id";
+                $stmt = $pdo->prepare($sql);
+            } else {
+                // Insert a new article
+                $sql = "INSERT INTO news_articles (article_title, article_content, article_imageUrl, reporter_id, CategoryID) 
+                        VALUES (:title, :content, :imageUrl, :reporter_id, :reporter_category)";
+                $stmt = $pdo->prepare($sql);
+                $params = [
+                    ':title' => $title,
+                    ':content' => $content,
+                    ':imageUrl' => $targetFile,
+                    ':reporter_id' => $reporter_id,
+                    ':reporter_category' => $reporter_category
+                ];
+            }
+
+            $stmt->execute($params);
+            echo "<script>alert('Post saved successfully!');</script>";
+        } catch (PDOException $e) {
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
     } else {
-        // Display validation errors
         foreach ($errors as $error) {
             echo "<p style='color: red;'>$error</p>";
         }
     }
-  }  
+}
 
-
-// Fetch all articles by the logged-in reporter
+// Fetch articles for the logged-in reporter
 try {
+    $limit = 3; // Number of records per page
+    $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) : 1;
+    $offset = ($page - 1) * $limit;
+
     $sql = "SELECT article_id, article_title, article_content, article_imageUrl, CreatedAt 
             FROM news_articles 
-            WHERE reporter_id = :reporter_id";
+            WHERE reporter_id = :reporter_id 
+            ORDER BY CreatedAt DESC 
+            LIMIT :limit OFFSET :offset";
+
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':reporter_id' => $reporter_id]);
+    $stmt->bindValue(':reporter_id', $reporter_id, PDO::PARAM_INT);
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
     $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Get total rows
+    $totalStmt = $pdo->prepare("SELECT COUNT(*) FROM news_articles WHERE reporter_id = :reporter_id");
+    $totalStmt->execute([':reporter_id' => $reporter_id]);
+    $totalRows = $totalStmt->fetchColumn();
+    $totalPages = ceil($totalRows / $limit);
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
 }
-
-// Pagination setup
-$limit = 3; // Number of records per page
-$page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) : 1;
-$offset = ($page - 1) * $limit;
-
-// Get total rows
-$totalStmt = $pdo->query("SELECT COUNT(*) FROM news_articles");
-$totalRows = $totalStmt->fetchColumn();
-$totalPages = ceil($totalRows / $limit);
-
-// Fetch paginated records
-$sql = "SELECT * FROM news_articles ORDER BY article_id ASC LIMIT :limit OFFSET :offset";
-$stmt = $pdo->prepare($sql);
-$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-$stmt->execute();
-$articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -408,6 +341,13 @@ form textarea {
     letter-spacing: 1px;
 }
 
+#article_tbl_div td img {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
 #article_tbl_div td {
     background-color: #ffffff;
 }
@@ -552,10 +492,10 @@ form textarea {
             <tr>
             <td><?php echo ($offset + $index + 1); ?></td>
                 <td><?= htmlspecialchars($data['article_title']) ?></td>
-                <td><?= nl2br(htmlspecialchars($data['article_content'])) ?></td>
+                <td><?= htmlspecialchars (substr($data['article_content'], 0, 500)) ?>...</td>
                 <td>
-                    <a href="<?= htmlspecialchars($data['article_imageUrl']) ?>" target="_blank">
-                        View Image
+                <a href="<?= htmlspecialchars($data['article_imageUrl']) ?>" target="_blank">
+                <img src="<?= htmlspecialchars($data['article_imageUrl']) ?>" width="100">
                     </a>
                 </td>
                 <td>

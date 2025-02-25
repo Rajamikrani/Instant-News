@@ -70,17 +70,40 @@ include "config.php";
              <div class="title">
                 <h2>Breaking News</h2> 
              </div>
-             <div class="img" id="breakingImg"></div>
-             <div class="text" id="breakingNews">
-                 <div class="title">
-                    <h2>Lorem ipsum dolor sit amet consectetur
-                      adipisicing elit.</h2>  
-                 </div>
-                 <div class="description">
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. 
-                 </div>
+             <div class="img" id="breakingImg">
+                <?php
+                try{
+                    $sql = "SELECT na.article_title, na.article_content, na.article_imageUrl
+                    FROM news_articles na
+                    JOIN news_category nc ON na.CategoryID = nc.CategoryID
+                    WHERE nc.CategoryName = 'Breaking News'
+                    ORDER BY na.CreatedAt DESC LIMIT 1";
+
+     $stmt = $pdo->query($sql);
+     $stmt -> execute();
+     
+     $breakingNews = $stmt->Fetch(PDO::FETCH_ASSOC);
+
+     if ($breakingNews) {
+         echo '<div class="img" id="breakingImg">';
+         echo '<img src="' . htmlspecialchars($breakingNews['article_imageUrl']) . '" alt="Breaking News Image">';
+         echo '</div>';
+         echo '<div class="text" id="breakingNews">';
+         echo '<div class="title">';
+         echo '<h2>' . htmlspecialchars($breakingNews['article_title']) . '</h2>';
+         echo '</div>';
+         echo '</div>';
+     } else {
+         echo '<p>No breaking news available.</p>';
+     }
+                }
+                 catch (PDOException $e) {
+                    echo '<p>Error fetching breaking news: ' . $e->getMessage() . '</p>';
+                }
+                ?>
              </div>
          </div>
+
          <div class="right">
          <div class="title">
              <h2>Top Headlines</h2>
@@ -111,7 +134,8 @@ include "config.php";
                                       consectetur adipisicing elit. 
                                  </div>
                              </div>
-                         </div>    <div class="news">
+                         </div>
+                             <div class="news">
                              <div class="img"></div>
                                  <div class="text">
                                      <div class="title">

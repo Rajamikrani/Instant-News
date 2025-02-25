@@ -134,13 +134,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result) {
             $role = $result['role']; // Identify the role
             $_SESSION['username'] = $username; // Save session
+            $reporter_category = $_SESSION['reporter_category'];
 
             // Redirect user based on role
             if ($role == 'admin') {
                 header('Location: /php_practice/news-site/admin/users.php');
                 exit();
             } elseif ($role == 'reporter') {
-                if (!empty($result['reporterId'])) { 
+                if (!empty($result['reporterId'] && $result['reporter_category'])) { 
                     $_SESSION['reporterId'] = $result['reporterId'];  // Store reporterId
                     $_SESSION['reporter_category'] = $result['reporter_category'];
                 } else {
