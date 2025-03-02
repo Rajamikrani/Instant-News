@@ -40,7 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitReporter'])) {
     if (empty($errors)) {
         try {
             $hashedPassword = hash('sha256', $password); // Hash the password
-            $sql = "INSERT INTO reporter (reporter_name, reporter_email, reporter_username, reporter_password, reporter_category) 
+            $sql = "INSERT INTO reporter (reporter_name, reporter_email,
+             reporter_username, reporter_password, reporter_category) 
                     VALUES (:name, :email, :username, :password, :categoryID)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -54,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitReporter'])) {
         } catch (PDOException $e) {
             echo "<script>alert('Error adding Reporter: " . $e->getMessage() . "');</script>";
         }
-        
     } else {
         foreach ($errors as $error) {
             echo "<p style='color: red;'>$error</p>";
@@ -89,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitReporter'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="editors.css">
     <title>Users</title>
 
@@ -526,12 +527,12 @@ header {
                 <!-- <td> <?php echo $data['CategoryName']; ?> </td> -->
                 <td>
                      <a href="edit_reporter.php?id=<?php echo $data['reporterId']; ?>">
-                       <img src="write.png" alt="edit_icon">
+                       <i class = "fas fa-edit"></i>
                     </a>
                 </td>
                 <td>
                     <a href="delete_reporter.php?id=<?php echo $data['reporterId']; ?>" onclick="return confirm('Are you sure you want to delete this reporter?');">
-                      <img src="delete.png" alt="delete_icon">
+                    <i class = "fas fa-trash"></i>
                     </a>
                 </td>
                </tr>

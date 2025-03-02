@@ -55,7 +55,9 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="category.css">
+
     <title>Users</title>
     <style>
 
@@ -528,13 +530,13 @@ header {
                         <td><?php echo htmlspecialchars($data['Description']); ?></td>
                         <td>
                             <a href="edit_category.php?id=<?php echo $data['CategoryID']; ?>">
-                                <img src="write.png" alt="edit_icon">
+                                <i class = "fas fa-edit"></i>
                             </a>
                         </td>
                         <td>
                             <a href="delete_category.php?id=<?php echo $data['CategoryID']; ?>" 
                                onclick="return confirm('Are you sure you want to delete this category?');">
-                                <img src="delete.png" alt="delete_icon">
+                               <i class = "fas fa-trash"></i>
                             </a>
                         </td>
                     </tr>

@@ -1,26 +1,21 @@
 <?php
 session_start();
 include "config.php";
-
 if (!isset($_GET['id'])) {
     echo "<script>alert('Invalid Request!'); window.location = 'category.php';</script>";
     exit();
 }
-
 $reporterId = $_GET['id'];
-
 // Fetch existing category details 
 $sql = "SELECT * FROM reporter WHERE reporterId = :id";
 $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':id', $reporterId);
 $stmt->execute();
 $reporter = $stmt->fetch(PDO::FETCH_ASSOC);
-
 if (!$reporter) {
     echo "<script>alert('Category not found!'); window.location = 'editors.php';</script>";
     exit();
 }
-
 if (isset($_POST['updateReporter'])) {
     $reporter_name = htmlspecialchars($_POST['reporter_name']);
     $reporter_email = htmlspecialchars($_POST['reporter_email']);

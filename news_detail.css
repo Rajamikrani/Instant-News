@@ -1,0 +1,132 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #041f43;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 1.5rem;
+    background-color: #0b0b11;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+}
+
+header h1 {
+    font-size: 1.8rem;
+    text-align: center;
+    color: #fff;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.data {
+    max-width: 1200px;
+    margin: 100px auto 0;
+    padding: 2rem 1.5rem;
+}
+
+.data h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: #4a90e2;
+    line-height: 1.2;
+}
+
+.data img {
+    width: 100%;
+    max-height: 600px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 2rem 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.content {
+    font-size: 1.5rem;
+    line-height: 1.8;
+    margin-top: 2rem;
+    padding: 2rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.content p {
+    margin-bottom: 1.5rem;
+}
+
+.error {
+    text-align: center;
+    color: #ff6b6b;
+    font-size: 2rem;
+    margin-top: 5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .data {
+        padding: 1rem;
+        margin-top: 80px;
+    }
+    
+    .data h1 {
+        font-size: 1.8rem;
+    }
+    
+    header h1 {
+        font-size: 1.4rem;
+    }
+    
+    .content {
+        padding: 1rem;
+        font-size: 1.5rem;
+    }
+    
+    .data img {
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 480px) {
+    .data img {
+        max-height: 300px;
+    }
+    
+    .data h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.data {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Link-like interaction for content elements */
+.content a {
+    color: #4a90e2;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.content a:hover {
+    color: #6ba8ff;
+    text-decoration: underline;
+}

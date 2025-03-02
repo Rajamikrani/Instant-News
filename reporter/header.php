@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="header.css">
     <title>Header</title>
-  
    <style>
     *{
     padding: 0;
@@ -57,10 +56,6 @@ img{
     <div class="header">
         <div class = "logo_div">
         <img src="../logo_1.jpg" alt="Logo">
-        </div>
-        <div class="menu_div">
-            <li><a href="">Home</a></li>
-            <li><a href="">Articles</a></li>
         </div>
        <div class="logout">
        <a href="../admin/logout.php"><i class = "fas fa-user"></i></a>

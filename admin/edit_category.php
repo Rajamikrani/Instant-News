@@ -1,42 +1,34 @@
 <?php
 session_start();
 include "config.php";
-
 if (!isset($_GET['id'])) {
     echo "<script>alert('Invalid Request!'); window.location = 'category.php';</script>";
     exit();
 }
-
 $categoryID = $_GET['id'];
-
 // Fetch existing category details 
 $sql = "SELECT * FROM news_category WHERE CategoryID = :id";
 $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':id', $categoryID);
 $stmt->execute();
 $category = $stmt->fetch(PDO::FETCH_ASSOC);
-
 if (!$category) {
     echo "<script>alert('Category not found!'); window.location = 'category.php';</script>";
     exit();
 }
-
 if (isset($_POST['updateCategory'])) {
     $categoryName = htmlspecialchars($_POST['categoryName']);
     $description = htmlspecialchars($_POST['description']);
-
     // Update query
     $sql = "UPDATE news_category SET CategoryName = :categoryName, Description = :description WHERE CategoryID = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':categoryName', $categoryName);
     $stmt->bindParam(':description', $description);
     $stmt->bindParam(':id', $categoryID);
-
     if ($stmt->execute()) {
         echo "<script>alert('Category updated successfully!'); window.location = 'category.php';</script>";
     } else {
-        echo "<script>alert('Error updating category!');</script>";
-    }
+        echo "<script>alert('Error updating category!');</script>"; }
 }
 ?>
 

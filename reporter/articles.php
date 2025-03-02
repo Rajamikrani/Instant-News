@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'config.php'; // Include PDO connection
+require '../config.php'; // Include PDO connection
 
 // Redirect to login if the reporter is not logged in
 if (!isset($_SESSION['reporterId']) || !isset($_SESSION['reporter_category'])) {
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitPost'])) {
     $content = trim($_POST['content']);
     $article_id = isset($_POST['article_id']) ? intval($_POST['article_id']) : 0;
     $errors = [];
-
+ 
     // Validate Inputs
     if (empty($title)) $errors[] = "Title is required.";
     if (empty($content)) $errors[] = "Content is required.";
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitPost'])) {
         $targetDir = "uploads/";
         if (!file_exists($targetDir)) {
             mkdir($targetDir, 0777, true);
-        }
+        } 
 
         $fileName = uniqid() . "_" . basename($_FILES["image"]["name"]);
         $targetFile = $targetDir . $fileName;
@@ -117,6 +117,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Articles</title>
     <style>
         *{
@@ -499,11 +500,15 @@ form textarea {
                     </a>
                 </td>
                 <td>
-                    <a href="#" class="edit-btn" data-id="<?= $data['article_id'] ?>">Edit</a>
+                    <a href="#" class="edit-btn" data-id="<?= $data['article_id'] ?>">
+                        <i class="fas fa-edit"></i>
+                </a>
                 </td>
                 <td>
                     <a href="delete_article.php?id=<?= $data['article_id'] ?>" 
-                       onclick="return confirm('Are you sure?')">Delete</a>
+                       onclick="return confirm('Are you sure?')">
+                       <i class="fas fa-trash"></i>
+                    </a>
                 </td>
             </tr>
         <?php endforeach; ?>

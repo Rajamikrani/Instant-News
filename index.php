@@ -13,7 +13,7 @@ include "config.php";
  <body>
      <div class="header">
          <div class="logo">
-             NEWS
+            <img src="logo_1.jpg" alt="logo">
          </div>
          <nav>
              <ul>
@@ -21,11 +21,8 @@ include "config.php";
             try {
                 $stmt = $pdo->query("SELECT CategoryName FROM news_category ORDER BY CreatedAt DESC limit 4");
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    // Convert category name into a slug format (replace spaces with hyphens)
-                    $slug = strtolower(str_replace(" ", "-", $row['CategoryName'])) . ".php";
-                    
-                    // Display category as a navigation item
-                    echo '<li><a href="' . htmlspecialchars($slug) . '">' . htmlspecialchars($row['CategoryName']) . '</a></li>';
+                    $categoryName = htmlspecialchars($row['CategoryName']);
+                    echo '<li><a href="category.php?name='.urlencode($categoryName).'">'.$categoryName.'</a></li>';
                 }
             } catch (PDOException $e) {
                 echo '<li><a href="#">Error loading categories</a></li>';
@@ -45,311 +42,109 @@ include "config.php";
          <div id = "categories">
             <ul>
             <?php
-            try {
-                $stmt = $pdo->query("SELECT CategoryName FROM news_category ORDER BY CreatedAt DESC");
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    // Convert category name into a slug format (replace spaces with hyphens)
-                    $slug = strtolower(str_replace(" ", "-", $row['CategoryName'])) . ".php";
-                    
-                    // Display category as a navigation item
-                    echo '<li><a href="' . htmlspecialchars($slug) . '">' . htmlspecialchars($row['CategoryName']) . '</a></li>';
-                }
-            } catch (PDOException $e) {
-                echo '<li><a href="#">Error loading categories</a></li>';
-            }
-            ?>
+         try {
+             $stmt = $pdo->query("SELECT CategoryName FROM news_category ORDER BY CreatedAt DESC");
+             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                 $categoryName = htmlspecialchars($row['CategoryName']);
+                 echo '<li><a href="category.php?name='.urlencode($categoryName).'">'.$categoryName.'</a></li>';
+             }
+         } catch (PDOException $e) {
+             echo '<li><a href="#">Error loading categories</a></li>';
+         }
+         ?>
             </ul>
        
          </div>
      </div>
 
-
-
-     <div class="topHeadlines">
+<div id = "all_news">
+<div class="topHeadlines">
          <div class="left">
+         <div class="breaking" id="breakingNews">
              <div class="title">
                 <h2>Breaking News</h2> 
              </div>
-             <div class="img" id="breakingImg">
-                <?php
-                try{
-                    $sql = "SELECT na.article_title, na.article_content, na.article_imageUrl
-                    FROM news_articles na
-                    JOIN news_category nc ON na.CategoryID = nc.CategoryID
-                    WHERE nc.CategoryName = 'Breaking News'
-                    ORDER BY na.CreatedAt DESC LIMIT 1";
-
-     $stmt = $pdo->query($sql);
-     $stmt -> execute();
-     
-     $breakingNews = $stmt->Fetch(PDO::FETCH_ASSOC);
-
-     if ($breakingNews) {
-         echo '<div class="img" id="breakingImg">';
-         echo '<img src="' . htmlspecialchars($breakingNews['article_imageUrl']) . '" alt="Breaking News Image">';
-         echo '</div>';
-         echo '<div class="text" id="breakingNews">';
-         echo '<div class="title">';
-         echo '<h2>' . htmlspecialchars($breakingNews['article_title']) . '</h2>';
-         echo '</div>';
-         echo '</div>';
-     } else {
-         echo '<p>No breaking news available.</p>';
-     }
-                }
-                 catch (PDOException $e) {
-                    echo '<p>Error fetching breaking news: ' . $e->getMessage() . '</p>';
-                }
-                ?>
+             <div class="news">
+                <!-- News will be loaded here via AJAX --> 
              </div>
+           </div>
          </div>
-
          <div class="right">
+         <div id="topHeadlines" class="topNews">
          <div class="title">
              <h2>Top Headlines</h2>
          </div>
-         <div class="topNews">
-             <div class="news">
-                 <div class="img"></div>
-                     <div class="text">
-                         <div class="title">
-                             Lorem ipsum dolor sit amet,
-                              consectetur adipisicing elit. 
-                         </div>
-                     </div>
-                 </div>
-                 <div class="news">
-                     <div class="img"></div>
-                         <div class="text">
-                             <div class="title">
-                                 Lorem ipsum dolor sit amet,
-                                  consectetur adipisicing elit. 
-                             </div>
-                         </div>
-                     </div>    <div class="news">
-                         <div class="img"></div>
-                             <div class="text">
-                                 <div class="title">
-                                     Lorem ipsum dolor sit amet,
-                                      consectetur adipisicing elit. 
-                                 </div>
-                             </div>
-                         </div>
-                             <div class="news">
-                             <div class="img"></div>
-                                 <div class="text">
-                                     <div class="title">
-                                         Lorem ipsum dolor sit amet,
-                                          consectetur adipisicing elit. 
-                                     </div>
-                                 </div>
-                             </div>    <div class="news">
-                                 <div class="img"></div>
-                                     <div class="text">
-                                         <div class="title">
-                                             Lorem ipsum dolor sit amet,
-                                              consectetur adipisicing elit. 
-                                         </div>
-                                     </div>
-                                 </div>    <div class="news">
-                                     <div class="img"></div>
-                                         <div class="text">
-                                             <div class="title">
-                                                 Lorem ipsum dolor sit amet,
-                                                  consectetur adipisicing elit. 
-                                             </div>
-                                         </div>
-                                     </div>    <div class="news">
-                                         <div class="img"></div>
-                                             <div class="text">
-                                                 <div class="title">
-                                                    
-                                                    Lorem ipsum dolor sit amet,
-                                                     consectetur adipisicing elit. 
-                                                </div>
-                                            </div>
-                                        </div> 
-                    <div class="news">
-                        <div class="img"></div>
-                            <div class="text">
-                                <div class="title">
-                                    Lorem ipsum dolor sit amet,
-                                     consectetur adipisicing elit. 
-                                </div>
-                            </div>
-                        </div>
-                         <div class="news">
-                            <div class="img"></div>
-                                <div class="text">
-                                    <div class="title">
-                                        Lorem ipsum dolor sit amet,
-                                         consectetur adipisicing elit. 
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                     <div class="news">
-                        <div class="img"></div>
-                            <div class="text">
-                                <div class="title">
-                                    Lorem ipsum dolor sit amet,
-                                     consectetur adipisicing elit. 
-                                </div>
-                            </div>
-                        </div>
-            </div>
+         <div class="newsBox">
+        <!-- News will be loaded here via AJAX --> 
         </div>
     </div>
+</div>
+</div>
+<hr padding : "10px">
+
     <div class="page2">
         <div class="news" id="sportsNews">
             <div class="title">
                 <h2>Sports News</h2>
             </div>
             <div class="newsBox">
-                <div class="newsCards">
-                    <div class="img"></div>
-                    <div class="text">
-                         <div class="title">
-                        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit</p>
-                    </div>
-                    </div>
-                   
-                </div>
-                <div class="newsCards">
-                    <div class="img"></div>
-                    <div class="text">
-                         <div class="title">
-                        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
-                    </div>
-                    </div>
-                   
-                </div>
-                <div class="newsCards">
-                    <div class="img"></div>
-                    <div class="text">
-                         <div class="title">
-                        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. </p>
-                    </div>
-                    </div>
-                   
-                </div>  <div class="newsCards">
-                    <div class="img"></div>
-                    <div class="text">
-                         <div class="title">
-                        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
-                    </div>
-                    </div>
-                   
-                </div>  <div class="newsCards">
-                    <div class="img"></div>
-                    <div class="text">
-                         <div class="title">
-                        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
-                    </div>
-                    </div>
-         
-         </div>       </div>
-    </div>
+              <!-- News will be loaded here via AJAX --> 
+        </div>
+      </div>
     <div class="news" id="businessNews">
         <div class="title">
             <h2>Business News</h2>
         </div>
         <div class="newsBox">
-            <div class="newsCards">
-                <div class="img"></div>
-                <div class="text">
-                     <div class="title">
-                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit</p>
-                </div>
-                </div>
+          <!-- News will be loaded here via AJAX --> 
+         </div>
+     </div>     
 
-               
-            </div>
-            <div class="newsCards">
-                <div class="img"></div>
-                <div class="text">
-                     <div class="title">
-                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
-                </div>
-                </div>
-               
-            </div>
-            <div class="newsCards">
-                <div class="img"></div>
-                <div class="text">
-                     <div class="title">
-                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. </p>
-                </div>
-                </div>
-               
-            </div>  <div class="newsCards">
-                <div class="img"></div>
-                <div class="text">
-                     <div class="title">
-                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
-                </div>
-                </div>
-               
-            </div>  <div class="newsCards">
-                <div class="img"></div>
-                <div class="text">
-                     <div class="title">
-                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
-                </div>
-                </div>
-     
-     </div>       </div>
-</div>
 <div class="news" id="technologyNews">
     <div class="title">
         <h2>Technology News</h2>
     </div>
     <div class="newsBox">
-        <div class="newsCards">
-            <div class="img"></div>
-            <div class="text">
-                 <div class="title">
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit</p>
-            </div>
-            </div>
-           
-        </div>
-        <div class="newsCards">
-            <div class="img"></div>
-            <div class="text">
-                 <div class="title">
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
-            </div>
-            </div>
-           
-        </div>
-        <div class="newsCards">
-            <div class="img"></div>
-            <div class="text">
-                 <div class="title">
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. </p>
-            </div>
-            </div>
-           
-        </div>  <div class="newsCards">
-            <div class="img"></div>
-            <div class="text">
-                 <div class="title">
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
-            </div>
-            </div>
-           
-        </div>  <div class="newsCards">
-            <div class="img"></div>
-            <div class="text">
-                 <div class="title">
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
-            </div>
-        </div>
+         <!-- News will be loaded here via AJAX --> 
     </div>  
- </div>
+ </div> 
+
+
+<!-- Add before closing </body> tag -->
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-section about">
+            <h3>About Us</h3>
+            <p>Stay informed with the latest news updates from around the world. Trusted source for breaking news, politics, technology, sports and more.</p>
+        </div>
+        
+        <div class="footer-section links">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="about.php">About Us</a></li>
+                <li><a href="contact.php">Contact</a></li>
+                <li><a href="privacy.php">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-section social">
+            <h3>Connect With Us</h3>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p>&copy; 2023 News Portal. All rights reserved.</p>
+    </div>
+</footer>
 </div>
+
 <script src = "index.js"></script>
 </body>
 </html>
